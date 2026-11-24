@@ -22,3 +22,6 @@ mobile/android_doctor.log
 .run_logs/
 .DS_Store
 *.log
+
+# Flutter generated iOS files
+mobile/ios/Flutter/ephemeral/
