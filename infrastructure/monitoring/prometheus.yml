@@ -1,0 +1,6 @@
+# Starter config. /actuator/prometheus requires the ADMIN role in the backend, so unauthenticated scraping
+# will get 401/403: either scrape from inside a trusted network after relaxing that rule, or add credentials here.
+global: {scrape_interval: 30s}
+scrape_configs:
+  - job_name: fraud-service
+    static_configs: [{targets: ["fraud-service:8000"]}]

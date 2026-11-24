@@ -1,0 +1,6 @@
+# Local development profile (SPRING_PROFILES_ACTIVE=local). Still requires DB_PASSWORD and PAYWELL_JWT_SECRET from the environment.
+paywell:
+  otp:
+    provider: dev-echo      # logs the OTP to the console for local testing; honoured only under the dev/local profiles
+  demo:
+    enabled: true

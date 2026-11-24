@@ -1,0 +1,5 @@
+package com.paywell.app
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

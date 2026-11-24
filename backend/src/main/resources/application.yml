@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: paywell-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/paywell}
+    username: ${DB_USER:paywell}
+    password: ${DB_PASSWORD}            # required: no default on purpose
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate                # schema is owned by Flyway
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+paywell:
+  timezone: Asia/Kolkata
+  jwt:
+    secret: ${PAYWELL_JWT_SECRET}        # required, >= 32 bytes; never commit
+    issuer: paywell
+    access-ttl: PT15M
+    refresh-ttl: P30D
+  security:
+    max-failed-logins: 5
+    lockout: PT15M
+    rate-limit:
+      auth-per-minute: 10
+      api-per-minute: 120
+  payments:
+    max-amount: 50000.00                 # per-transaction cap in demo mode
+    currency: INR
+    provider: simulated                  # only "simulated" exists; real providers need a signed partner agreement
+  fraud:
+    base-url: ${FRAUD_SERVICE_URL:http://localhost:8000}
+    service-token: ${FRAUD_SERVICE_TOKEN:}
+    timeout: PT2S
+    fail-open: true                      # demo only. Production should fail closed for HIGH-value payments.
+  webhook:
+    secret: ${PAYWELL_WEBHOOK_SECRET:}   # empty => webhook endpoint answers 503 (no provider configured)
+    tolerance: PT5M
+  otp:
+    provider: none                       # none | dev-echo. "none" = OTP delivery NOT configured.
+  demo:
+    enabled: true                        # synthetic data + simulate-incoming endpoint. Disable outside demos.
+    opening-balance: 25000.00
+  cors:
+    allowed-origins: ${PAYWELL_CORS_ORIGINS:}   # comma-separated origins; empty => no cross-origin browser access (native mobile apps do not need CORS)
+  events:
+    kafka:
+      enabled: ${PAYWELL_KAFKA_ENABLED:false}   # optional; the app runs fully without Kafka
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+      topic: paywell.events
